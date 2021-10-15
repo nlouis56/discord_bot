@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 #coding=utf8
 
 import os
@@ -35,7 +35,7 @@ async def spam(message) :
         await message.reply(f"jvais ping ta mère aussi")
         return
     i = 0
-    while (i < qty) :
+    for i in range (0, qty) :
         await message.channel.send(txt)
         i = i + 1
 
