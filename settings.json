@@ -1,0 +1,11 @@
+{
+    "userinfo": {
+        "superusers": ["<@806210029672726528>", "<@306845310250909696>"],
+        "nat": "306845310250909696"
+    },
+
+    "dialogs": {
+        "responses": "ping_response.txt",
+        "roles": "random_roles.txt"
+    }
+}
