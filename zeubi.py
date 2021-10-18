@@ -108,7 +108,7 @@ async def commands_manager(message) :
         sysload.add_field(name="RAM (%)", value=mem)
         sysload.add_field(name="CPU (%)", value=cpu)
         sysload.set_footer(text="c'est pas une raison pour tout péter")
-
+        message.channel.send(embed=sysload)
 
 @client.event
 async def on_ready():
