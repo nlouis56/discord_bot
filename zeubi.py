@@ -5,6 +5,7 @@ import os
 import discord
 import random
 import json
+import psutil
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -100,6 +101,14 @@ async def commands_manager(message) :
         else :
             await message.channel.send(embed=permissions_error)
             await message.channel.send("sal fou mdrr")
+    elif message.content.startswith(">getload") :
+        mem = psutil.virtual_memory().percent
+        cpu = psutil.cpu_percent(interval=None)
+        sysload = discord.Embed(title="Charge Système", description="", color=0xFC0303)
+        sysload.add_field(name="RAM (%)", value=mem)
+        sysload.add_field(name="CPU (%)", value=cpu)
+        sysload.set_footer(text="c'est pas une raison pour tout péter")
+
 
 @client.event
 async def on_ready():
