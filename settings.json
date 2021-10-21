@@ -1,11 +1,27 @@
 {
     "userinfo": {
-        "superusers": ["<@806210029672726528>", "<@306845310250909696>"],
-        "nat": "306845310250909696"
+        "superusers": ["<@306845310250909696>"]
     },
 
     "dialogs": {
         "responses": "ping_response.txt",
         "roles": "random_roles.txt"
+    },
+
+    "chatroom": {
+        "channels": "chatroom_channels.txt"
+    }, 
+
+    "autoresponses": {
+        "cool": ["😎", "🤙", "🤟"],
+        "wow": ["😳", "😲", "🤙"],
+        "salut": ["✌️", "👋"],
+        "coucou": ["🤭", "🤗"],
+        "bite": ["🍆"],
+        "cul": ["🍑"],
+        "chatte": ["😼"],
+        "zeubi": ["💯", "🦾", "⛓️"],
+        "zeubo": ["<:1Head:814062704355704853>"],
+        "test": ["🙌"]
     }
 }
