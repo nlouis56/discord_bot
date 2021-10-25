@@ -171,9 +171,7 @@ async def commands_manager(message) :
 async def add_reaction(message) :
     for react in reactions :
         if react in message.content :
-                n = len(reactions[react])
-                r = random.randint(0, n - 1)
-                em = reactions[react][r]
+                em = random.choice(reactions[react])
                 await message.add_reaction(em)
 
 async def message_analyzer(message) :
@@ -194,10 +192,10 @@ async def on_ready():
 
 @client.event
 async def on_message(message) :
+    if client.user.mentioned_in(message) :
+        await ping(message)
     if bool(message.content) and message.content[0] == '>' :
         await commands_manager(message)
-    elif client.user.mentioned_in(message) :
-        await ping(message)
     else :
         await message_analyzer(message)
 
