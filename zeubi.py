@@ -1,51 +1,20 @@
 #!/usr/bin/env python3
 #coding=utf8
 
-import os
+from os import getenv, getpid, _exit
 import discord
-import random
-import json
+from random import choice
 import psutil
 from dotenv import load_dotenv
+from utils import Utils
+from embeds import help_message, permissions_error
 
 load_dotenv()
-TOKEN = os.getenv('DISCORD_TOKEN')
+TOKEN = getenv('DISCORD_TOKEN')
 
-help_message = discord.Embed(title="L'aide de zeubi", description="vraiment joli ce truc")
-help_message.add_field(name="Commandes :", value="\n>spam <quantité> <mot>\n\
-    >test\n\
-        >invite\n\
-            >say <channel id> <message>\n\
-                >infosys\n\
-                    >man_bash\n\
-                        >dump")
-help_message.add_field(name="Perms Zone :", value=">killbot\n>reload_assets")
-help_message.set_footer(text="et puis voilà hein faut pas trop en demander non plus")
-
-permissions_error = discord.Embed(title="Erreur !", description="", color=0xFC0303)
-permissions_error.add_field(name="T'as pas les perms", value="Erreur de permissions, tu ne peux pas éxecuter cette commande")
-permissions_error.set_footer(text="cheh mdr")
-
-current = psutil.Process(os.getpid())
+current = psutil.Process(getpid())
 
 client = discord.Client()
-
-def load_assets() :
-    global ping_response, superusers, reactions
-    with open('settings.json', encoding='utf-8') as f:
-        data = json.load(f)
-    responses = data["dialogs"]["responses"]
-    superusers = data["userinfo"]["superusers"]
-    reactions = data["autoresponses"]
-    with open(responses, encoding="utf8") as fresp :
-        ping_response = fresp.read().splitlines()
-
-def perms_check(user_id) -> bool:
-    if user_id in superusers :
-        return (True)
-    else :
-        return (False)
-
 
 #UTILS  ↑
 ###############################################################################
@@ -88,8 +57,7 @@ async def say(message) :
     try :
         n = int(message.content.split()[1])
     except (ValueError) :
-        await message.channel.send("c'est pas comme ça que ça s'utilise <:1Head:814062704355704853>\n\
-                ps : si tu demande gentiment je peux te donner de l'aide")
+        await message.channel.send("c'est pas comme ça que ça s'utilise <:1Head:814062704355704853>\nps : si tu demande gentiment je peux te donner de l'aide")
         return
     try :
         channel = client.get_channel(n)
@@ -102,7 +70,7 @@ async def ping(message) :
         await message.channel.send("sale bot de merde")
     else :
         await message.add_reaction("🖕")
-        await message.channel.send(random.choice(ping_response))
+        await message.channel.send(choice(utils.ping_response))
 
 async def sys_load(message) :
     mem = psutil.virtual_memory().percent
@@ -127,7 +95,7 @@ async def sys_load(message) :
 
 async def commands_manager(message) :
     if message.content.startswith(">test") :
-        if perms_check(message.author.mention) :
+        if utils.is_su(message.author.mention) :
             await message.channel.send("tester c'est douter")
         else :
             await message.channel.send(embed=permissions_error)
@@ -140,12 +108,15 @@ async def commands_manager(message) :
     elif message.content.startswith(">spam") :
         await spam(message)
     elif message.content.startswith(">say") :
-        await say(message)
+        if (message.author.bot) :
+            message.channel.send("non mdr")
+        else :
+            await say(message)
     elif message.content.startswith(">killbot") :
-        if perms_check(message.author.mention) :
+        if utils.is_su(message.author.mention) :
             await message.channel.send("c'est la fin de moi, ciao les gens")
             print(">killbot received, ending program")
-            os._exit(0)
+            _exit(0)
         else :
             await message.channel.send(embed=permissions_error)
             await message.channel.send("sal fou mdrr")
@@ -154,28 +125,86 @@ async def commands_manager(message) :
     elif message.content.startswith(">man_bash") :
         await man_bash(message)
     elif message.content.startswith(">reload_assets") :
-        if perms_check(message.author.mention) :
-            load_assets()
+        if utils.is_su(message.author.mention) :
+            utils.refresh()
             await message.add_reaction("✅")
         else :
             await message.channel.send(embed=permissions_error)
     elif message.content.startswith(">dump") :
-        str = "```" + message.content + "```"
-        await message.channel.send(str)
-
+        string = "```" + message.content + "```"
+        await message.channel.send(string)
+    elif message.content.startswith(">addchannel") :
+        chan = message.channel.id
+        if bool(utils.channels) :
+            is_added = False
+            for c in utils.channels :
+                if c == str(chan) :
+                    is_added = True
+                    await message.channel.send("Le channel \"" + message.channel.name + "\" est déjà enregistré")
+                    await message.add_reaction("⚠️")
+                    break
+            if not is_added :
+                with open(utils.cr_channels, "a", encoding="utf8") as fchr :
+                        fchr.write(str(chan) + "\n")
+                utils.refresh()
+                await message.add_reaction("✅")
+        else :
+            print("empty file")
+            with open(utils.cr_channels, "a", encoding="utf8") as fchr :
+                fchr.write(str(chan) + "\n")
+            utils.refresh()
+            await message.add_reaction("✅")
+    elif message.content.startswith(">rmchannel") :
+        with open(utils.cr_channels, "r") as f:
+            lines = f.readlines()
+        with open(utils.cr_channels, "w") as f:
+            for line in lines:
+                if line.strip("\n") != str(message.channel.id):
+                    f.write(line)
+        utils.refresh()
+        await message.add_reaction("✅")
+    elif message.content.startswith(">rick") :
+        await message.channel.send("https://tenor.com/view/rick-astley-never-gonna-give-you-up-cry-for-help-pwl-stock-aitken-waterman-gif-17671973")
+    else :
+        await message.add_reaction("⁉️")
 
 #COMMANDS  ↑
+###############################################################################
+#CHATROOM  ↓
+
+
+async def distribute_message(message) :
+    s = "Serveur : " + message.guild.name
+    msg_embed = discord.Embed(title=message.author , description=s)
+    if message.attachments :
+        msg_embed.set_image(url=message.attachments[0].url)
+    if message.content :
+        if len(message.content) >= 1024 :
+            await message.reply("un message en embed ne peut pas être plus long que 1024 caractères")
+            msg_embed.add_field(name="<texte trop long>", value="limite de 1024 caractères pour les messages dans ce salon")
+        else :
+            msg_embed.add_field(name="- - - - - - - - - - - -\n", value=message.content)
+    msg_embed.set_thumbnail(url=message.author.avatar_url)
+    for c in utils.channels :
+        if c != str(message.channel.id) and message.author.mention != client.user.mention :
+            chan = client.get_channel(int(c))
+            await chan.send(embed=msg_embed)
+
+#CHATROOM  ↑
 ###############################################################################
 #AUTOMATIC REACTIONS  ↓
 
 async def add_reaction(message) :
-    for react in reactions :
+    for react in utils.reactions :
         if react in message.content :
-                em = random.choice(reactions[react])
+                em = choice(utils.reactions[react])
                 await message.add_reaction(em)
 
 async def message_analyzer(message) :
     await add_reaction(message)
+    for c in utils.channels :
+        if c == str(message.channel.id) :
+            await distribute_message(message)
 
 
 #AUTOMATIC REACTIONS  ↑
@@ -188,7 +217,6 @@ async def on_ready():
     print(f"{client.user} est connecté à Discord !\nserveurs rejoints:")
     for guild in client.guilds:
         print(f"{guild.name} - id :{guild.id}")
-    load_assets()    
 
 @client.event
 async def on_message(message) :
@@ -196,7 +224,12 @@ async def on_message(message) :
         await ping(message)
     if bool(message.content) and message.content[0] == '>' :
         await commands_manager(message)
-    else :
-        await message_analyzer(message)
+    await message_analyzer(message)
 
-client.run(TOKEN)
+def main() :
+    global utils
+    utils = Utils()
+    client.run(TOKEN)
+
+if __name__ == "__main__" :
+    main()
