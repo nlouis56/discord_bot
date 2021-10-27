@@ -144,20 +144,20 @@ async def commands_manager(message) :
                     await message.add_reaction("⚠️")
                     break
             if not is_added :
-                with open(utils.cr_channels, "a", encoding="utf8") as fchr :
+                with open(utils.chat_chans_file, "a", encoding="utf8") as fchr :
                         fchr.write(str(chan) + "\n")
                 utils.refresh()
                 await message.add_reaction("✅")
         else :
-            print("empty file")
-            with open(utils.cr_channels, "a", encoding="utf8") as fchr :
+            print("first chatroom channel added")
+            with open(utils.chat_chans_file, "a", encoding="utf8") as fchr :
                 fchr.write(str(chan) + "\n")
             utils.refresh()
             await message.add_reaction("✅")
     elif message.content.startswith(">rmchannel") :
-        with open(utils.cr_channels, "r") as f:
+        with open(utils.chat_chans_file, "r") as f:
             lines = f.readlines()
-        with open(utils.cr_channels, "w") as f:
+        with open(utils.chat_chans_file, "w") as f:
             for line in lines:
                 if line.strip("\n") != str(message.channel.id):
                     f.write(line)
