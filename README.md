@@ -30,6 +30,15 @@ Drops the man page of BASH (approx. 15k lines of obscure linux things)
 Shows the litteral text, without embedding emotes, gifs, or user tags
 
 #
+## Chatroom commands   
+
+> \>addchannel   
+Adds the current channel to the "global chatroom"   
+
+> \>rmchannel   
+Removes the current channel of the "global chatroom"
+
+#
 ## Superuser commands
 
 to access these, you just have to put your userid (or the userid of anyone you wish to make a superuser) in the "superusers" list of the settings.json file   
