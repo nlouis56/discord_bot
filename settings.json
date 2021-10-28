@@ -4,12 +4,12 @@
     },
 
     "dialogs": {
-        "responses": "ping_response.txt",
-        "roles": "random_roles.txt"
+        "responses": "./resources/ping_response.txt",
+        "roles": "./resources/random_roles.txt"
     },
 
     "chatroom": {
-        "channels": "chatroom_channels.txt"
+        "channels": "./resources/chatroom_channels.txt"
     }, 
 
     "autoresponses": {

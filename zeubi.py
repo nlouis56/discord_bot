@@ -7,7 +7,7 @@ from random import choice
 import psutil
 from dotenv import load_dotenv
 from utils import Utils
-from embeds import help_message, permissions_error
+from embeds import help_message, permissions_error, git_repo, warning_stop_bot
 
 load_dotenv()
 TOKEN = getenv('DISCORD_TOKEN')
@@ -93,6 +93,12 @@ async def sys_load(message) :
     sysload.set_footer(text="c'est pas une raison pour tout péter")
     await message.channel.send(embed=sysload)
 
+async def list_servers(message) :
+    server_list = discord.Embed(title="Liste des serveurs :")
+    for guild in client.guilds:
+        server_list.add_field(name=guild.name, value="id : " + str(guild.id), inline=False)
+    await message.channel.send(embed=server_list)
+
 async def commands_manager(message) :
     if message.content.startswith(">test") :
         if utils.is_su(message.author.mention) :
@@ -116,6 +122,9 @@ async def commands_manager(message) :
         if utils.is_su(message.author.mention) :
             await message.channel.send("c'est la fin de moi, ciao les gens")
             print(">killbot received, ending program")
+            for c in utils.channels :
+                chan = client.get_channel(int(c))
+                await chan.send(embed=warning_stop_bot)
             _exit(0)
         else :
             await message.channel.send(embed=permissions_error)
@@ -144,20 +153,20 @@ async def commands_manager(message) :
                     await message.add_reaction("⚠️")
                     break
             if not is_added :
-                with open(utils.chat_chans_file, "a", encoding="utf8") as fchr :
+                with open(utils.cr_channels, "a", encoding="utf8") as fchr :
                         fchr.write(str(chan) + "\n")
                 utils.refresh()
                 await message.add_reaction("✅")
         else :
-            print("first chatroom channel added")
-            with open(utils.chat_chans_file, "a", encoding="utf8") as fchr :
+            print("empty file")
+            with open(utils.cr_channels, "a", encoding="utf8") as fchr :
                 fchr.write(str(chan) + "\n")
             utils.refresh()
             await message.add_reaction("✅")
     elif message.content.startswith(">rmchannel") :
-        with open(utils.chat_chans_file, "r") as f:
+        with open(utils.cr_channels, "r") as f:
             lines = f.readlines()
-        with open(utils.chat_chans_file, "w") as f:
+        with open(utils.cr_channels, "w") as f:
             for line in lines:
                 if line.strip("\n") != str(message.channel.id):
                     f.write(line)
@@ -165,6 +174,10 @@ async def commands_manager(message) :
         await message.add_reaction("✅")
     elif message.content.startswith(">rick") :
         await message.channel.send("https://tenor.com/view/rick-astley-never-gonna-give-you-up-cry-for-help-pwl-stock-aitken-waterman-gif-17671973")
+    elif message.content.startswith(">git") :
+        await message.channel.send(embed=git_repo)
+    elif message.content.startswith(">list_servers") :
+        await list_servers(message)
     else :
         await message.add_reaction("⁉️")
 
@@ -174,8 +187,14 @@ async def commands_manager(message) :
 
 
 async def distribute_message(message) :
-    s = "Serveur : " + message.guild.name
-    msg_embed = discord.Embed(title=message.author , description=s)
+    field = "〰️ 〰️ 〰️ 〰️"
+    msg_embed = discord.Embed(title="Serveur : " + message.guild.name)
+    msg_embed.set_author(name=message.author.display_name, icon_url=message.author.avatar_url)
+    if message.reference :
+        replied_to = message.reference
+        msg = await message.channel.fetch_message(replied_to.message_id)
+        msg_embed.add_field(name="répond à :", value=str(msg.author.display_name) + "\n" + str(msg.content), inline=False)
+        field = "message :"
     if message.attachments :
         msg_embed.set_image(url=message.attachments[0].url)
     if message.content :
@@ -183,8 +202,7 @@ async def distribute_message(message) :
             await message.reply("un message en embed ne peut pas être plus long que 1024 caractères")
             msg_embed.add_field(name="<texte trop long>", value="limite de 1024 caractères pour les messages dans ce salon")
         else :
-            msg_embed.add_field(name="- - - - - - - - - - - -\n", value=message.content)
-    msg_embed.set_thumbnail(url=message.author.avatar_url)
+            msg_embed.add_field(name=field + "〰️\n", value=message.content, inline=False)
     for c in utils.channels :
         if c != str(message.channel.id) and message.author.mention != client.user.mention :
             chan = client.get_channel(int(c))
