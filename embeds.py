@@ -9,11 +9,12 @@ help_message.add_field(name="Commandes :", value="\n>spam <quantité> <mot> \n> 
     >say <channel id> <message> \n> le bot dira <message> dans le channel correspondant à <channel id>\n\n\
     >infosys \n> donne les informations actuelles du serveur\n\n\
     >man_bash \n> affichage de la page 'man bash' (15k lignes)\n\n\
-    >dump \n> affichage du message sans les embeds ou mises en forme quelconques\n\n")
+    >dump \n> affichage du message sans les embeds ou mises en forme quelconques\n\n\
+    >ping \n> calcule et affiche le ping avec le serveur de discord\n\n")
 help_message.add_field(name="Chatroom :", value=">addchannel \n> ajout du salon actuel dans le système de chatroom globale\n\n\
     >rmchannel \n> retrait du salon actuel du système de chatroom globale\n\n\
     >list_servers \n> liste les serveurs dans lesquels le bot est présent")
-help_message.add_field(name="Perms Zone :", value=">killbot\n>reload_assets")
+help_message.add_field(name="Perms Zone :", value=">killbot\n>reload_assets\n>startup")
 help_message.set_footer(text="et puis voilà hein faut pas trop en demander non plus")
 
 permissions_error = Embed(title="Erreur !", description="", color=0xFC0303)
@@ -23,3 +24,10 @@ permissions_error.set_footer(text="cheh mdr")
 git_repo = Embed(title="zeubi_bot sur GitHub", link="https://github.com/nlouis56/zeubi_bot", description="https://github.com/nlouis56/zeubi_bot")
 
 warning_stop_bot = Embed(title="Arrêt du bot !", description="Les chatrooms et autres commandes reviennent vite :)", color=0xFC0303)
+
+mention_startup = Embed(title="zeubi est de retour !", description="Le serveur a redémarré sans encombre", color=0x2BC442)
+
+
+def make_embed(title, description, color=0x000000) :
+    em = Embed(title=title, description=description, color=color)
+    return(em)

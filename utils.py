@@ -7,10 +7,10 @@ class Utils :
         self.resp_file = self.data["dialogs"]["responses"]
         self.superusers = self.data["userinfo"]["superusers"]
         self.reactions = self.data["autoresponses"]
-        self.chat_chans_file = self.data["chatroom"]["channels"]
+        self.chatroom_channels = self.data["chatroom"]["channels"]
         with open(self.resp_file, encoding="utf8") as fresp :
             self.ping_response = fresp.read().splitlines()
-        with open(self.chat_chans_file, encoding="utf8") as fchr :
+        with open(self.chatroom_channels, encoding="utf8") as fchr :
             self.channels = fchr.read().splitlines()
         
     def refresh(self) :
