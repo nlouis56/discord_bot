@@ -4,7 +4,12 @@
    
 zeubi only speaks french for now, language packs are coming soon !   
 
-He really dislikes getting pings from people, he'll probably stard insulting the sender of the message
+He really dislikes getting pings from people, he'll probably stard insulting the sender of the message   
+
+zeubi can link your server to a whole network of other servers through his "chatroom" functionality !
+I strongly recommend the creation of a new channel for this.
+Every message you send in the channel will be transmitted to all the other servers present on the "network" with a registered channel, you will then receive and be able to interact with their responses.   
+
 #
 ## Useful commands (accessible by everyone)
 
