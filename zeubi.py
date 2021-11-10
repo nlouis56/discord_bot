@@ -60,13 +60,12 @@ async def distribute_message(message) :
             msg_embed.add_field(name=field + "〰️\n", value=message.content, inline=False)
     for c in utils.channels :
         if c != str(message.channel.id) :
+            chan = client.get_channel(int(c))
             if message.author.id == client.user.id and message.embeds :
                 return
-            else :
-                chan = client.get_channel(int(c))
-                await chan.send(embed=msg_embed)
-                if lnk :
-                    await chan.send(lnk)
+            await chan.send(embed=msg_embed)
+            if lnk :
+                await chan.send(lnk)
 
 async def message_analyzer(message) :
     utils = Utils()
@@ -99,23 +98,23 @@ async def on_ready():
 
 @client.event
 async def on_message(message) :
-    utils = Utils()
     await message_analyzer(message)
     if client.user.mentioned_in(message) :
-        await ping_rep(message, client, current, utils)
+        await ping_rep(message, client, current, startup_utils)
     if message.content and message.content[0] == '>' :
         cmd = str(message.content.split()[0])
         cmd = cmd[1:]
         try :
             command = getattr(commands, cmd)
-            await command(message,client, current, utils)
+            await command(message,client, current, startup_utils)
         except (AttributeError) :
             await message.add_reaction("⁉️")
-        #await commands_manager(message)
-    del utils
+    startup_utils.refresh()
 
 def main() :
+    global startup_utils
     if path.isfile("./settings.json") :
+        startup_utils = Utils()
         client.run(TOKEN)
     else :
         print("Error ! settings.json is not present ! Aborting.")
