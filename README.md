@@ -2,7 +2,7 @@
 ![Python](https://img.shields.io/badge/Python-3670A0?style=flat-square&logo=python&logoColor=ffdd54)   
 [![GPLv3 license](https://img.shields.io/badge/License-GPLv3-blue?style=flat-square&logo=license-gplv3)](https://choosealicense.com/licenses/gpl-3.0/)   
    
-zeubi only speaks french for now, language packs are coming soon !   
+zeubi now speaks english and french, language packs are here ! (i'll introduce more languages asap)   
 
 He really dislikes getting pings from people, he'll probably stard insulting the sender of the message   
 
@@ -51,6 +51,9 @@ to access these, you just have to put your userid (or the userid of anyone you w
 
 > \>killbot   
 Kills the bot (duh)   
+
+> \>startup   
+Sends a message in all the chatrooms mentionning that the bot is back online
 
 > \>reload_assets   
 Hot-reload of the ping responses, automatic reactions, and everything in the json file. This command is used for minor changes with no downtime
