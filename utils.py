@@ -6,28 +6,24 @@ class Utils :
         with open('settings.json', encoding='utf8') as f:
             self.data = load(f)
         try :
+            self.lang = self.data["language_packs"]
             self.resp_file = self.data["dialogs"]["responses"]
-        except Exception as e :
-            print("Error : the path to the responses file is not valid or the json.settings is not configured correctly.\n\nException : " + str(e))
-        try :
             self.superusers = self.data["userinfo"]["superusers"]
-        except Exception as e :
-            print("Error : the superusers property is not valid or the json.settings is not configured correctly.\n\nException : " + str(e))
-        try :
             self.reactions = self.data["autoresponses"]
-        except Exception as e :
-            print("Error : the autoresponse property is not valid or the json.settings is not configured correctly.\n\nException : " + str(e))
-        try :
             self.chatroom_channels = self.data["chatroom"]["channels"]
+            self.en_servers_file = self.data["dialogs"]["en_servers"]
         except Exception as e :
-            print("Error : the path to the chatroom_channels file is not valid or the json.settings is not configured correctly.\n\nException : " + str(e))
+            print("Error : the json.settings is not configured correctly (possibly an invalid path).\n\nException : " + str(e))
         try :
+            with open(self.en_servers_file, encoding="utf8") as fensrv :
+                en = fensrv.read().splitlines()
             with open(self.resp_file, encoding="utf8") as fresp :
                 pr = fresp.read().splitlines()
             with open(self.chatroom_channels, encoding="utf8") as fchr :
                 ch = fchr.read().splitlines()
         except Exception :
             print ("ERROR !\n\nthe path to one of the files is not correct !\n\nERROR!")
+        self.en_servers = en
         self.ping_response = pr
         self.channels = ch
 
@@ -39,3 +35,9 @@ class Utils :
             return (True)
         else :
             return (False)
+
+    def server_lang(self, server_id) :
+        for s in self.en_servers :
+            if s == str(server_id) :
+                return ("en")
+        return ("fr")
