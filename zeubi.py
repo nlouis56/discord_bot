@@ -90,8 +90,10 @@ async def message_analyzer(message) :
 
 async def add_reaction(message) :
     utils = Utils()
-    for react in utils.reactions :
-        if react in message.content :
+    words = message.content.split()
+    for word in words :
+        for react in utils.reactions :
+            if react == word :
                 em = choice(utils.reactions[react])
                 await message.add_reaction(em)
 
