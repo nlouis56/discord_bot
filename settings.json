@@ -5,7 +5,8 @@
 
     "dialogs": {
         "responses": "./resources/ping_response.txt",
-        "roles": "./resources/random_roles.txt"
+        "roles": "./resources/random_roles.txt",
+        "en_servers": "./resources/en_servers.txt"
     },
 
     "chatroom": {
