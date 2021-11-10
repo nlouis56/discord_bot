@@ -63,9 +63,18 @@ async def distribute_message(message) :
             chan = client.get_channel(int(c))
             if message.author.id == client.user.id and message.embeds :
                 return
-            await chan.send(embed=msg_embed)
-            if lnk :
-                await chan.send(lnk)
+            if chan :
+                await chan.send(embed=msg_embed)
+                if lnk :
+                    await chan.send(lnk)
+            else :
+                with open(utils.chatroom_channels, "r") as f:
+                    lines = f.readlines()
+                with open(utils.chatroom_channels, "w") as f:
+                    for line in lines:
+                        if line.strip("\n") != str(c):
+                            f.write(line)
+    utils.refresh()
 
 async def message_analyzer(message) :
     utils = Utils()
