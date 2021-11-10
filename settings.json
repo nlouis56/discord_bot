@@ -10,7 +10,7 @@
 
     "chatroom": {
         "channels": "./resources/chatroom_channels.txt"
-    }, 
+    },
 
     "autoresponses": {
         "cool": ["😎", "🤙", "🤟"],
@@ -23,5 +23,38 @@
         "zeubi": ["💯", "🦾", "⛓️"],
         "zeubo": ["<:1Head:814062704355704853>"],
         "test": ["🙌"]
+    },
+
+    "language_packs": {
+        "en": {
+            "test": "testing is doubting",
+            "invite": "here's the invite link you cutie :\n",
+            "usage": "That's not how you're supposed to use this <:1Head:814062704355704853>\nIf you ask nicely I can help you :)",
+            "chid_error": "This channel's ID is apparently not valid.",
+            "spam_cooldown": "bro calm down",
+            "spam_tag": "I'm gonna ping your mom too",
+            "bot_reply": "dumb ass bot",
+            "sysload_title": "System Load",
+            "sysload_self": "(I'm currently using ",
+            "server_list": "Server list",
+            "killbot": "it's the end of me, bye people",
+            "ping": "Ping with discord.gg",
+            "chatroom_response": "replies to : "
+        },
+        "fr": {
+            "test": "tester c'est douter",
+            "invite": "voilà le lien d'invitation espèce de bg :\n",
+            "usage": "C'est pas comme ça que ça s'utilise <:1Head:814062704355704853>\nSi tu demande gentiment je peux t'aider :)",
+            "chid_error": "L'ID de ce channel n'est pas valide",
+            "spam_cooldown": "force pas non plus frérot",
+            "spam_tag": "je vait ping ta mère aussi",
+            "bot_reply": "sale bot de merde",
+            "sysload_title": "Charge système",
+            "sysload_self": "(J'utilise actuellement ",
+            "server_list": "Liste des serveurs",
+            "killbot": "c'est la fin de moi, ciao les gens",
+            "ping": "Ping avec discord.gg",
+            "chatroom_response": "répond à : "
+        }
     }
 }
