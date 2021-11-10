@@ -1,3 +1,4 @@
 .env
 tests
 __py*
+resources
