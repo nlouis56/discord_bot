@@ -24,8 +24,6 @@ client = discord.Client()
 
 
 async def distribute_message(message) :
-    utils = Utils()
-    lang = utils.server_lang(message.guild.id)
     field = "〰️ 〰️ 〰️ 〰️"
     msg_embed = discord.Embed(title="Serveur : " + message.guild.name)
     msg_embed.set_author(name=message.author.display_name, icon_url=message.author.avatar_url)
@@ -59,9 +57,12 @@ async def distribute_message(message) :
         else :
             msg_embed.add_field(name=field + "〰️\n", value=message.content, inline=False)
     for c in utils.channels :
+        if message.content.startswith("key:" + utils.key) and message.author == client.user :
+            continue
         if c != str(message.channel.id) :
             chan = client.get_channel(int(c))
             if message.author.id == client.user.id and message.embeds :
+                utils.refresh()
                 return
             if chan :
                 await chan.send(embed=msg_embed)
@@ -74,10 +75,8 @@ async def distribute_message(message) :
                     for line in lines:
                         if line.strip("\n") != str(c):
                             f.write(line)
-    utils.refresh()
 
-async def message_analyzer(message) :
-    utils = Utils()
+async def message_analyzer(message, utils) :
     await add_reaction(message)
     for c in utils.channels :
         if c == str(message.channel.id) :
@@ -89,7 +88,6 @@ async def message_analyzer(message) :
 #AUTOMATIC REACTIONS  ↓
 
 async def add_reaction(message) :
-    utils = Utils()
     words = message.content.split()
     for word in words :
         for react in utils.reactions :
@@ -109,23 +107,22 @@ async def on_ready():
 
 @client.event
 async def on_message(message) :
-    await message_analyzer(message)
+    await message_analyzer(message, utils)
     if client.user.mentioned_in(message) :
-        await ping_rep(message, client, current, startup_utils)
-    if message.content and message.content[0] == '>' :
+        await ping_rep(message, client, current, utils)
+    if message.content and message.content[0] == '>' and message.author != client.user:
         cmd = str(message.content.split()[0])
         cmd = cmd[1:]
         try :
             command = getattr(commands, cmd)
-            await command(message,client, current, startup_utils)
+            await command(message,client, current, utils)
         except (AttributeError) :
             await message.add_reaction("⁉️")
-    startup_utils.refresh()
 
 def main() :
-    global startup_utils
+    global utils
     if path.isfile("./settings.json") :
-        startup_utils = Utils()
+        utils = Utils()
         client.run(TOKEN)
     else :
         print("Error ! settings.json is not present ! Aborting.")
