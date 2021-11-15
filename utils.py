@@ -1,4 +1,6 @@
 from json import load
+import string
+import random
 
 class Utils :
 
@@ -26,6 +28,7 @@ class Utils :
         self.en_servers = en
         self.ping_response = pr
         self.channels = ch
+        self.key = self.random_generator()
 
     def refresh(self) :
         self.__init__()
@@ -41,3 +44,6 @@ class Utils :
             if s == str(server_id) :
                 return ("en")
         return ("fr")
+
+    def random_generator(self, size=6, chars=string.printable):
+        return ''.join(random.choice(chars) for _ in range(size))
