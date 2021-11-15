@@ -69,6 +69,7 @@ async def ping_rep(message, client, current, utils) :
     else :
         await message.add_reaction("🖕")
         await message.channel.send(choice(utils.ping_response))
+    utils.refresh()
 
 async def infosys(message, client, current, utils) :
     lang = utils.server_lang(message.guild.id)
@@ -130,7 +131,6 @@ async def ping(message, client, current, utils) :
     await message.channel.send(embed=make_embed(utils.lang[lang]["ping"], str(avg) +  " ms", color=color))
 
 async def addchannel(message, client, current, utils) :
-    utils = Utils()
     chan = message.channel.id
     if bool(utils.channels) :
         is_added = False
@@ -153,7 +153,6 @@ async def addchannel(message, client, current, utils) :
         await message.add_reaction("✅")
 
 async def rmchannel(message, client, current, utils) :
-    utils = Utils()
     with open(utils.chatroom_channels, "r") as f:
         lines = f.readlines()
     with open(utils.chatroom_channels, "w") as f:
@@ -164,7 +163,7 @@ async def rmchannel(message, client, current, utils) :
     await message.add_reaction("✅")
 
 async def startup(message, client, current, utils) :
-    utils = Utils()
+    utils.refresh()
     if utils.is_su(message.author.mention) :
         for c in utils.channels :
             chan = client.get_channel(int(c))
@@ -246,3 +245,26 @@ async def test(message, client, current, utils) :
 async def rick(message, client, current, utils) :
     await message.channel.send("https://tenor.com/view/rick-astley-never-gonna-give-you-up-cry-for-help-pwl-stock-aitken-waterman-gif-17671973")
 
+async def message_all(message, client, current, utils) :
+    if utils.is_su(message.author.mention) :
+        txt = ' '.join(message.content.split()[1:])
+        for c in utils.channels :
+            chan = client.get_channel(int(c))
+            lang = utils.server_lang(chan.guild.id)
+            await chan.send("key:" + utils.key + "\n" + txt)
+    else :
+        lang = utils.server_lang(message.guild.id)
+        await message.channel.send(embed=permissions_error[lang])
+
+async def random_gen(message, client, current, utils) :
+    try :
+        qty = int(message.content.split()[1])
+    except :
+        await message.reply("cpt")
+        return
+    if (qty > 1994) :
+        await message.add_reaction("🇳")
+        await message.add_reaction("🇴")
+        return
+    txt = utils.random_generator(size=qty)
+    await message.channel.send("```" + txt + "```")
