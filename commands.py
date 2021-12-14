@@ -228,8 +228,8 @@ async def dump(message, client, current, utils) :
 
 async def reload_assets(message, client, current, utils) :
     if utils.is_su(message.author.mention) :
-            utils.refresh()
-            await message.add_reaction("✅")
+        utils.refresh()
+        await message.add_reaction("✅")
 
 async def invite(message, client, current, utils) :
     lang = utils.server_lang(message.guild.id)
