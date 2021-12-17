@@ -4,3 +4,4 @@ __py*
 resources
 resources/
 old/
+log*.txt*
