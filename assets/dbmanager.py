@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 #coding=utf8
 
-from os import truncate
 import discord
-from logger import writelog
+from assets.logger import writelog
 import mysql.connector
 
 def test_connection(sqlconfig: dict) :
@@ -52,7 +51,7 @@ def update_member(sqlconfig: dict, member: discord.member = None) -> None :
     if not bool(result) :
         try :
             writelog(title="SQL(member)", message=f"Creating entry for {member.name} in table")
-            cursor.execute(f"INSERT INTO discord_bot.member VALUES ('{member.id}','<@!{member.id}>', '{member.name}', 0, 0, 0);")
+            cursor.execute(f"INSERT INTO discord_bot.member VALUES ('{member.id}','<@!{member.id}>', '{member.name}', DEFAULT, DEFAULT, DEFAULT, DEFAULT);")
             SQL.commit()
         except Exception as ex:
             writelog(title="SQL(member)", message=f"Creating entry for {member.name} failed, {ex}")

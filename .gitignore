@@ -1,7 +1,4 @@
 .env
-tests
 __py*
-resources
-resources/
-old/
 log*.txt*
+v1/

@@ -6,8 +6,8 @@ import psutil
 from time import perf_counter
 from os import getenv, getpid
 from dotenv import load_dotenv
-from logger import writelog, startup_log
-from dbmanager import *
+from assets.logger import writelog, startup_log
+from assets.dbmanager import *
 
 load_dotenv()
 TOKEN = getenv('DISCORD_TOKEN_TEST')
