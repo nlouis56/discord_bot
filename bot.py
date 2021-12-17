@@ -34,16 +34,18 @@ def performance_logger() -> None :
         COUNT = 0
 
 @client.event
-async def on_message(message) -> None :
+async def on_message(message: discord.Message) -> None :
     if message.author == client.user :
         return
     performance_logger()
     update_member(sqlconfig, member=message.author)
 
 @client.event
-async def on_raw_reaction_add(payload: discord.RawReactionActionEvent) :
+async def on_raw_reaction_add(payload: discord.RawReactionActionEvent) -> None :
     writelog(title="REACTION", message="Reaction received, looking for match with reaction roles")
     guild = client.get_guild(payload.guild_id)
+    if payload.member == client.user :
+        return
     role = check_reaction_role(sqlconfig, guild, payload.message_id, payload.emoji)
     if role is not None :
         await payload.member.add_roles(role)
@@ -52,11 +54,13 @@ async def on_raw_reaction_add(payload: discord.RawReactionActionEvent) :
         writelog(title="REACTION", message="Role could not be fetched")
 
 @client.event
-async def on_raw_reaction_remove(payload: discord.RawReactionActionEvent) :
+async def on_raw_reaction_remove(payload: discord.RawReactionActionEvent) -> None :
     writelog(title="REACTION", message="Reaction removed, looking for match with reaction roles")
     guild = client.get_guild(payload.guild_id)
-    role = check_reaction_role(sqlconfig, guild, payload.message_id, payload.emoji)
     member = await guild.fetch_member(int(payload.user_id))
+    if member == client.user :
+        return
+    role = check_reaction_role(sqlconfig, guild, payload.message_id, payload.emoji)
     if role is not None :
         await member.remove_roles(role) # !! NOT WORKING !! AttributeError: 'NoneType' object has no attribute 'remove_roles'
         writelog(title="REACTION ROLES", message=f"Role {role.name} removed from {member.name} in {guild.name}")
@@ -64,12 +68,12 @@ async def on_raw_reaction_remove(payload: discord.RawReactionActionEvent) :
         writelog(title="REACTION", message="Role could not be fetched")
 
 @client.event
-async def on_guild_join(guild) :
+async def on_guild_join(guild: discord.Guild) -> None :
     print (f"{client.user} joined {guild.name}")
     register_new_server(sqlconfig, guild)
 
 @client.event
-async def on_guild_remove(guild) :
+async def on_guild_remove(guild: discord.Guild) -> None :
     print (f"{client.user} left {guild.name}")
     remove_server(sqlconfig, guild)
 
