@@ -27,7 +27,6 @@ def update_servers(sqlconfig: dict, client: discord.Client) :
         for r in result :
             if int(r[0]) == int(guild.id) :
                 del result[idx]
-                print (f"server {guild.name} is present")
                 break
             idx = idx + 1
     cursor = SQL.cursor()

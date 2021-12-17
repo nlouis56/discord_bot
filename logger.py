@@ -34,7 +34,7 @@ def writelog(title: str ="LOG", message: str ="void", error: bool =False, perfre
     if path.isfile('log.txt') :
         with open('log.txt', 'a', encoding="utf-8") as f:
             if error:
-                f.write(f"/!\\ ERROR - [{timestr}] - {title} - {message}\n", encoding="utf-8")
+                f.write(f"/!\\ ERROR - [{timestr}] - {title} - {message}\n")
             elif perfreport :
                 f.write(f"[{timestr}] - PERFORMANCE (normal) - mem global : {mem}% - mem program : {m} MB - cpu global : {cpu}%\n")
             else :
