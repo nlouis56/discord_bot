@@ -4,8 +4,19 @@
 import discord
 from assets.logger import writelog
 import mysql.connector
+from os import getenv
+from dotenv import load_dotenv
 
-def test_connection(sqlconfig: dict) :
+def get_sqlconfig() -> dict :
+    sqlconfig = {
+        "host" : getenv('SQL_HOST'),
+        "user" : getenv('SQL_USER'),
+        "password" : getenv('SQL_PASSWORD')
+    }
+    return (sqlconfig)
+
+def test_connection() :
+    sqlconfig = get_sqlconfig()
     try :
         SQL = mysql.connector.connect(**sqlconfig)
         cursor = SQL.cursor()
@@ -14,8 +25,8 @@ def test_connection(sqlconfig: dict) :
     except Exception :
         return False
 
-def update_servers(sqlconfig: dict, client: discord.Client) :
-    SQL = mysql.connector.connect(**sqlconfig)
+def update_servers(client: discord.Client) :
+    SQL = mysql.connector.connect(**get_sqlconfig())
     cursor = SQL.cursor()
     writelog(title="SQL(server)", message="Updating server table in database...")
     cursor.execute(f"SELECT DISTINCT * FROM discord_bot.server;")
@@ -43,8 +54,8 @@ def update_servers(sqlconfig: dict, client: discord.Client) :
     writelog(title="SQL(server)", message="Server update finished, database is ready and up-to-date")
     return
 
-def update_member(sqlconfig: dict, member: discord.member = None) -> None :
-    SQL = mysql.connector.connect(**sqlconfig)
+def update_member(member: discord.member = None) -> None :
+    SQL = mysql.connector.connect(**get_sqlconfig())
     cursor = SQL.cursor()
     cursor.execute(f"SELECT distinct * FROM discord_bot.member WHERE member_id = {member.id};")
     result = cursor.fetchall()
@@ -70,9 +81,9 @@ def update_member(sqlconfig: dict, member: discord.member = None) -> None :
     SQL.close()
     return
 
-def register_new_server(sqlconfig: dict, guild: discord.Guild) :
+def register_new_server(guild: discord.Guild) :
     writelog(title="SQL(server)", message="New server joined, updating database...")
-    SQL = mysql.connector.connect(**sqlconfig)
+    SQL = mysql.connector.connect(**get_sqlconfig())
     cursor = SQL.cursor()
     try :
         cursor.execute(f"INSERT INTO discord_bot.server VALUES ('{guild.id}',\"{guild.name}\", DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT);")
@@ -86,9 +97,9 @@ def register_new_server(sqlconfig: dict, guild: discord.Guild) :
         SQL.close()
         raise
 
-def remove_server(sqlconfig: dict, guild: discord.Guild) :
+def remove_server(guild: discord.Guild) :
     writelog(title="SQL(server)", message="Client left a server, updating database...")
-    SQL = mysql.connector.connect(**sqlconfig)
+    SQL = mysql.connector.connect(**get_sqlconfig())
     cursor = SQL.cursor()
     try :
         cursor.execute(f"DELETE FROM discord_bot.server WHERE server_id = '{guild.id}';")
@@ -102,8 +113,8 @@ def remove_server(sqlconfig: dict, guild: discord.Guild) :
         SQL.close()
         raise
 
-def get_member_count(sqlconfig: dict) -> int:
-    SQL = mysql.connector.connect(**sqlconfig)
+def get_member_count() -> int:
+    SQL = mysql.connector.connect(**get_sqlconfig())
     cursor = SQL.cursor()
     writelog(title="SQL", message="Retrieving member count")
     try :
@@ -116,8 +127,8 @@ def get_member_count(sqlconfig: dict) -> int:
     writelog(title="SQL", message=f"Member count = {count}")
     return (count)
 
-def get_server_count(sqlconfig: dict) -> int:
-    SQL = mysql.connector.connect(**sqlconfig)
+def get_server_count() -> int:
+    SQL = mysql.connector.connect(**get_sqlconfig())
     cursor = SQL.cursor()
     writelog(title="SQL", message="Retrieving server count")
     cursor.execute("SELECT COUNT(distinct server_id) FROM discord_bot.server;")
@@ -126,9 +137,9 @@ def get_server_count(sqlconfig: dict) -> int:
     writelog(title="SQL", message=f"Server count = {count}")
     return (count)
 
-def add_reaction_role(sqlconfig: dict, role_id: str, message_id: str, channel_id: str, server_id: str) -> None :
+def add_reaction_role(role_id: str, message_id: str, channel_id: str, server_id: str) -> None :
     writelog(title="SQL(reaction roles)", message="New reaction roles requested, updating database...")
-    SQL = mysql.connector.connect(**sqlconfig)
+    SQL = mysql.connector.connect(**get_sqlconfig())
     cursor = SQL.cursor()
     try :
         cursor.execute(f"INSERT INTO discord_bot.reaction_roles (id_message, id_channel, id_server, id_role, reaction) VALUES ('{message_id}', '{channel_id}', '{server_id}', '{role_id}');")
@@ -140,8 +151,8 @@ def add_reaction_role(sqlconfig: dict, role_id: str, message_id: str, channel_id
         writelog(title="SQL", message=f"Updating reaction roles failed, ex : {ex}")
         raise
 
-def check_reaction_role(sqlconfig: dict, server: discord.Guild, message_id: str, emoji: str) -> discord.Role :
-    SQL = mysql.connector.connect(**sqlconfig)
+def check_reaction_role(server: discord.Guild, message_id: str, emoji: str) -> discord.Role :
+    SQL = mysql.connector.connect(**get_sqlconfig())
     cursor = SQL.cursor(buffered=True)
     try :
         cursor.execute(f"SELECT distinct id_role FROM discord_bot.reaction_roles WHERE id_message = '{message_id}' and reaction = '{emoji}';")
