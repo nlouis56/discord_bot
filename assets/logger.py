@@ -11,7 +11,6 @@ def startup_log() :
     cwd = getcwd()
     logpath = path.join(cwd, "logs")
     latestpath = path.join(logpath, "latest.txt")
-    print (f"not a directory, path = {logpath}")
     if not path.isdir(logpath) :
         mkdir(logpath)
     if path.isfile(latestpath) :
